@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 np.random.seed(42)
 MAX_SEQUENCE_LENGTH=300
 
-(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=1000)
+(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=60000)
 wordindex=imdb.get_word_index(path="imdb_word_index.json")
 wordindex = {k:(v+3) for k,v in wordindex.items()}
 wordindex["<PAD>"] = 0
@@ -63,6 +63,7 @@ print('Shape of Test Data Labels:', y_test.shape)
 # print(y_test.shape)
 
 model = Sequential()
+model.add(layerl)
 model.add(Dense(512,activation='relu'))
 # model.add(Dropout(0.5))
 model.add(Dense(2, activation='softmax'))
