@@ -8,16 +8,19 @@ from keras.layers import TextVectorization
 from keras.preprocessing.sequence import pad_sequences
 import matplotlib.pyplot as plt
 
+from html_format import format_page
+
 np.random.seed(42)
-MAX_SEQUENCE_LENGTH=300
-sample=2000
-x_train_neg = open("aclimdb/train_neg_reviews.txt").readlines()[0:sample]
-x_train_pos = open("aclimdb/train_pos_reviews.txt").readlines()[0:sample]
+MAX_SEQUENCE_LENGTH=200
+train_sample=50000
+test_sample=50
+x_train_neg = open("aclimdb/train_neg_reviews.txt").readlines()[0:train_sample]
+x_train_pos = open("aclimdb/train_pos_reviews.txt").readlines()[0:train_sample]
 x_train = keras.ops.convert_to_tensor(x_train_neg + x_train_pos, dtype="string")
 y_train = keras.utils.to_categorical([0]*len(x_train_neg) + [1]*len(x_train_pos), 2)
 
-x_test_neg = open("aclimdb/test_neg_reviews.txt").readlines()[0:sample]
-x_test_pos = open("aclimdb/test_pos_reviews.txt").readlines()[0:sample]
+x_test_neg = open("aclimdb/test_neg_reviews.txt").readlines()[0:test_sample]
+x_test_pos = open("aclimdb/test_pos_reviews.txt").readlines()[0:test_sample]
 x_test = keras.ops.convert_to_tensor(x_test_neg + x_test_pos, dtype="string")
 y_test = keras.utils.to_categorical([0]*len(x_test_neg) + [1]*len(x_test_pos), 2)
 
@@ -44,7 +47,8 @@ print(data)
 model = keras.models.Sequential()
 model.add(keras.Input(shape=(1,), dtype="string")) 
 model.add(vectorize_layer) 
-model.add(keras.layers.Dense(16, activation='relu'))
+# model.add(keras.layers.Dense(4, activation='relu'))
+# model.add(keras.layers.Dropout(0.2))
 model.add(Dense(2, activation='softmax'))
 model.summary()
 model.compile(loss='categorical_crossentropy',
@@ -53,8 +57,8 @@ model.compile(loss='categorical_crossentropy',
 # model.predict(keras.ops.convert_to_tensor(["a"], dtype="string"))
 
 hist = model.fit(x_train, y_train,
-          batch_size=32,
-          epochs=10,
+          batch_size=16,
+          epochs=4,
           validation_data=(x_test, y_test), 
           verbose=2)
 
@@ -85,3 +89,16 @@ print("\n\n\nvery bad", len(very_bad))
 # x = Input(shape=(32,))
 # y = Dense(16, activation='softmax')(x)
 # model = Model(x, y)
+# print(very_good[0])
+# print(very_bad[0])
+
+data = [
+    [.05, .95, "great movie blah blah blah CORRECT TP", True],
+    [.65, .35, "terrible dah dah CORRECT TN", False],
+    [.15, .85, "oh no dah dah WRONG FP", False],
+    [.75, .25, "good dah dah WRONG FN", True]
+]
+data = [ (x[0], x[1], x_test_pos[i], True) for i, x in enumerate(good)] + \
+       [ (x[0], x[1], x_test_neg[i], False) for i, x in enumerate(bad)] 
+data.sort(key= lambda x: x[0])
+format_page(data)
