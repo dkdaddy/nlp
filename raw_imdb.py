@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 from html_format import format_page
 
 np.random.seed(42)
-MAX_SEQUENCE_LENGTH=200
-train_sample=50000
-test_sample=50
+MAX_SEQUENCE_LENGTH=1000
+train_sample=25000
+test_sample=5000
 x_train_neg = open("aclimdb/train_neg_reviews.txt").readlines()[0:train_sample]
 x_train_pos = open("aclimdb/train_pos_reviews.txt").readlines()[0:train_sample]
 x_train = keras.ops.convert_to_tensor(x_train_neg + x_train_pos, dtype="string")
